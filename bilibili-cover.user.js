@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         【移动端】bilibili优化
 // @namespace    https://github.com/WhiteSevs/TamperMonkeyScript
-// @version      2026.10.31
+// @version      2026.10.31.2
 // @author       WhiteSevs
 // @description  阻止跳转App、App端推荐视频流、解锁视频画质(番剧解锁需配合其它插件)、美化显示、去广告等
 // @license      GPL-3.0-only
@@ -6408,10 +6408,40 @@
 			};
 		};
 	};
+	var fixAndroidFullscreenBlackScreen = (art) => {
+		let wasPlaying = false;
+		const recordPlayState = () => {
+			wasPlaying = art.playing;
+		};
+		art.template.$player.addEventListener("click", (event) => {
+			if (event.target?.closest(".art-control-fullscreen, .art-control-fullscreenWeb")) recordPlayState();
+		}, true);
+		art.template.$video.addEventListener("dblclick", recordPlayState, true);
+		const resumeAfterFullscreen = () => {
+			if (!wasPlaying) return;
+			wasPlaying = false;
+			const tryResume = () => {
+				if (art.isDestroy) return;
+				try {
+					if (!art.playing && art.currentTime < (art.duration || Infinity)) art.play().catch(() => {});
+					window.dispatchEvent(new Event("resize"));
+				} catch {}
+			};
+			setTimeout(tryResume, 0);
+			setTimeout(tryResume, 300);
+		};
+		art.on("fullscreen", (state) => {
+			if (state) resumeAfterFullscreen();
+		});
+		art.on("fullscreenWeb", (state) => {
+			if (state) resumeAfterFullscreen();
+		});
+	};
 	var ArtPlayerInit = (art) => {
 		art.on("video:seeked", () => {
 			if (!art.playing) art.template.$poster.style.display = "none";
 		});
+		fixAndroidFullscreenBlackScreen(art);
 	};
 	var generateVideoSelectSetting = (option) => {
 		let epList = option.epList || [];
