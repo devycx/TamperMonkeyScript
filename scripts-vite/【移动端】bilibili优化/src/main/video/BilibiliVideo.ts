@@ -1009,27 +1009,32 @@ export const BilibiliVideo = {
           $commentNext = null;
           $commentModuleWrapper.removeAttribute(showAttr);
         };
-        BilibiliVideoPlayer.$data.art.on("fullscreen", (state) => {
-          if (state) {
-            // 进入全屏
-          } else {
-            // 退出全屏
-            // 那就需要把评论模块移回去
-            if ($artVideoPlayer!.contains($commentModuleWrapper)) {
-              if ($commentPrev) {
-                DOMUtils.after($commentPrev, $commentModuleWrapper);
-              } else if ($commentNext) {
-                DOMUtils.before($commentNext, $commentModuleWrapper);
-              } else if ($commentParent) {
-                DOMUtils.append($commentParent, $commentModuleWrapper);
-              } else {
-                Qmsg.error("无法找到原来的位置", {
-                  parent: $artVideoPlayer!,
-                });
-              }
+        const onExitFullscreen = () => {
+          // 退出全屏后把评论模块移回原来的位置
+          if ($artVideoPlayer && $artVideoPlayer.contains($commentModuleWrapper)) {
+            if ($commentPrev) {
+              DOMUtils.after($commentPrev, $commentModuleWrapper);
+            } else if ($commentNext) {
+              DOMUtils.before($commentNext, $commentModuleWrapper);
+            } else if ($commentParent) {
+              DOMUtils.append($commentParent, $commentModuleWrapper);
+            } else {
+              Qmsg.error("无法找到原来的位置", {
+                parent: $artVideoPlayer,
+              });
             }
-            // 清除状态
-            clearState();
+          }
+          // 清除状态
+          clearState();
+        };
+        BilibiliVideoPlayer.$data.art.on("fullscreen", (state) => {
+          if (!state) {
+            onExitFullscreen();
+          }
+        });
+        BilibiliVideoPlayer.$data.art.on("fullscreenWeb", (state) => {
+          if (!state) {
+            onExitFullscreen();
           }
         });
         DOMUtils.on($commentIcon, "click", (event) => {

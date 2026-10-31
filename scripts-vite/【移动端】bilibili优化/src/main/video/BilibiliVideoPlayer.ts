@@ -3,6 +3,7 @@ import { BilibiliCDNProxy } from "@/api/BilibiliCDNProxy";
 import { BilibiliVideoApi } from "@/api/BilibiliVideoApi";
 import { BilibiliData } from "@/data/BlibiliData";
 import { $, addStyle, DOMUtils, log } from "@/env";
+import { isAndroid } from "@/player/ArtPlayerCommonOption";
 import artPlayerCommonCSS from "@/player/player.css?raw";
 import type { ArtPlayerPluginQualityOption } from "@/player/plugins/artplayer-plugin-quality";
 import { VideoSoundQualityCode } from "@/video-info/AudioDict";
@@ -541,11 +542,15 @@ export const BilibiliVideoPlayer = {
           that.$data.art.once("ready", () => {
             Panel.execMenu("bili-video-playerAutoPlayVideoFullScreen", async () => {
               log.info(`自动进入全屏`);
-              that.$data.art.fullscreen = true;
-              that.$data.art.once("fullscreenError", () => {
-                log.warn("未成功进入全屏，需要用户交互操作，使用网页全屏代替");
+              if (Panel.getValue("bili-video-fullscreen-useWeb", isAndroid)) {
                 that.$data.art.fullscreenWeb = true;
-              });
+              } else {
+                that.$data.art.fullscreen = true;
+                that.$data.art.once("fullscreenError", () => {
+                  log.warn("未成功进入全屏，需要用户交互操作，使用网页全屏代替");
+                  that.$data.art.fullscreenWeb = true;
+                });
+              }
             });
           });
         } else {

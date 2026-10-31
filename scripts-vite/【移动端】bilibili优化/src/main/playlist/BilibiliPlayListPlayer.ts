@@ -1,5 +1,6 @@
 import { BilibiliData } from "@/data/BlibiliData";
 import { $, DOMUtils, log } from "@/env";
+import { isAndroid } from "@/player/ArtPlayerCommonOption";
 import { VueUtils } from "@components/utils/VueUtils";
 import { BilibiliVideoPlayer, GenerateArtPlayerOption, type VideoInfo } from "../video/BilibiliVideoPlayer";
 import { BilibiliVideoArtPlayer } from "../video/artplayer/ArtPlayer";
@@ -202,11 +203,15 @@ export const BilibiliPlayListPlayer = {
           that.$data.art.once("ready", () => {
             Panel.execMenu("bili-video-playerAutoPlayVideoFullScreen", async () => {
               log.info(`自动进入全屏`);
-              that.$data.art.fullscreen = true;
-              that.$data.art.once("fullscreenError", () => {
-                log.warn("未成功进入全屏，需要用户交互操作，使用网页全屏代替");
+              if (Panel.getValue("bili-video-fullscreen-useWeb", isAndroid)) {
                 that.$data.art.fullscreenWeb = true;
-              });
+              } else {
+                that.$data.art.fullscreen = true;
+                that.$data.art.once("fullscreenError", () => {
+                  log.warn("未成功进入全屏，需要用户交互操作，使用网页全屏代替");
+                  that.$data.art.fullscreenWeb = true;
+                });
+              }
             });
           });
           that.$data.art.on("video:ended", () => {

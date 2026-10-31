@@ -105,7 +105,8 @@
   display: none;
 }
 /* 全屏下才显示 */
-.art-fullscreen .art-player-top-right-container {
+.art-fullscreen .art-player-top-right-container,
+.art-fullscreen-web .art-player-top-right-container {
   display: flex;
   gap: 5px;
 }

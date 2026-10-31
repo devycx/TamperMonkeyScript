@@ -4,6 +4,9 @@ import { Panel } from "@components/setting/panel";
 import type { Option } from "artplayer";
 import { ArtPlayerBiliBiliIcon } from "./BilibiliArtPlayerIcon";
 
+/** 是否 Android 设备 */
+export const isAndroid = /Android/i.test(navigator.userAgent);
+
 export const ArtPlayerCommonOption = (): Option => {
   const option: Option = {
     /** 容器 */
@@ -39,7 +42,7 @@ export const ArtPlayerCommonOption = (): Option => {
     /** 是否显示视频宽高比按钮 */
     aspectRatio: false,
     /** 是否显示视频窗口全屏按钮 */
-    fullscreen: true,
+    fullscreen: !Panel.getValue("bili-video-fullscreen-useWeb", isAndroid),
     /** 是否显示视频网页全屏按钮 */
     fullscreenWeb: true,
     /** 是否启用播放器字幕偏移 */

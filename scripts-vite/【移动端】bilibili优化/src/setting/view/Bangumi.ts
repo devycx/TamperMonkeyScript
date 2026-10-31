@@ -36,6 +36,13 @@ const SettingUIBangumi: PopsPanelContentConfig = {
               text: "控件设置",
               type: "container",
               views: [
+                UISwitch(
+                  "全屏使用网页全屏",
+                  "bili-video-fullscreen-useWeb",
+                  /Android/i.test(navigator.userAgent),
+                  void 0,
+                  "Android上部分浏览器原生全屏会黑屏几秒，开启后隐藏原生全屏按钮，使用网页全屏"
+                ),
                 UISlider(
                   "controls左右边距",
                   "bili-bangumi-artplayer-controlsPadding-left-right",
