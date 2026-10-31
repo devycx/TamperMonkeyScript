@@ -1,5 +1,6 @@
 import { BilibiliData } from "@/data/BlibiliData";
 import { $, DOMUtils, log } from "@/env";
+import { setBilibiliMediaSessionMetadata } from "@/player/MediaSession";
 import { VueUtils } from "@components/utils/VueUtils";
 import { BilibiliVideoPlayer, GenerateArtPlayerOption, type VideoInfo } from "../video/BilibiliVideoPlayer";
 import { BilibiliVideoArtPlayer } from "../video/artplayer/ArtPlayer";
@@ -246,6 +247,9 @@ export const BilibiliPlayListPlayer = {
           // 更新artplayer播放信息
           await BilibiliVideoArtPlayer.update(that.$data.art, artPlayerOption);
         }
+
+        // 同步到媒体通知，让Android（小米）的媒体控制显示视频封面
+        setBilibiliMediaSessionMetadata(artPlayerOption.videoTitle, artPlayerOption.poster);
       },
     });
     VueUtils.waitVuePropToSet(BilibiliData.className.playlist + " .playlist-player", {

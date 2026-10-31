@@ -3,6 +3,7 @@ import { BilibiliCDNProxy } from "@/api/BilibiliCDNProxy";
 import { BilibiliVideoApi } from "@/api/BilibiliVideoApi";
 import { BilibiliData } from "@/data/BlibiliData";
 import { $, addStyle, DOMUtils, log } from "@/env";
+import { setBilibiliMediaSessionMetadata } from "@/player/MediaSession";
 import artPlayerCommonCSS from "@/player/player.css?raw";
 import type { ArtPlayerPluginQualityOption } from "@/player/plugins/artplayer-plugin-quality";
 import { VideoSoundQualityCode } from "@/video-info/AudioDict";
@@ -560,6 +561,9 @@ export const BilibiliVideoPlayer = {
           // 更新artplayer播放信息
           await BilibiliVideoArtPlayer.update(that.$data.art, artPlayerOption);
         }
+
+        // 同步到媒体通知，让Android（小米）的媒体控制显示视频封面
+        setBilibiliMediaSessionMetadata(artPlayerOption.videoTitle, artPlayerOption.poster);
 
         // 如果开启了滚动固钉tab，当滚动到底部推荐视频进行切换视频时，当前视频paddingTop是0，会导致视频不能归位
         // 需要重置paddingTop

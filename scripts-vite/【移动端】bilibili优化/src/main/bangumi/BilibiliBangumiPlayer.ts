@@ -7,6 +7,7 @@ import {
 import { BilibiliCDNProxy } from "@/api/BilibiliCDNProxy";
 import { BilibiliData } from "@/data/BlibiliData";
 import { $, DOMUtils, log, utils } from "@/env";
+import { setBilibiliMediaSessionMetadata } from "@/player/MediaSession";
 import type { ArtPlayerPluginAirborneHelperOption } from "@/player/plugins/artplayer-plugin-airborneHelper";
 import type { ArtPlayerPluginQualityOption } from "@/player/plugins/artplayer-plugin-quality";
 import { BilibiliLogUtils } from "@/utils/BilibiliLogUtils";
@@ -356,6 +357,7 @@ export const GenerateArtPlayerOption = async (EP_INFO: EP_INFO, EP_LIST: EP_LIST
     bvid: bvid,
     ep_id: ep_id,
     videoTitle: videoTitle,
+    poster: EP_INFO.cover,
     danmukuUrl: `https://${BilibiliApiConfig.web_host}/x/v1/dm/list.so?oid=${cid}`,
     quality: currentVideoQuality,
     clip_info_list: clip_info_list,
@@ -517,6 +519,9 @@ export const BlibiliBangumiPlayer = {
           // 更新artplayer播放信息
           BilibiliBangumiArtPlayer.update(that.$data.art, artPlayerOption);
         }
+
+        // 同步到媒体通知，让Android（小米）的媒体控制显示视频封面
+        setBilibiliMediaSessionMetadata(artPlayerOption.videoTitle, artPlayerOption.poster);
       },
     });
   },

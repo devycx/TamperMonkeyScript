@@ -58,6 +58,8 @@ export type BilibiliBangumiArtPlayerOption = {
   epList: EP_INFO[];
   /** 视频链接 */
   url?: string | (() => IPromise<string>);
+  /** 视频封面 */
+  poster?: string;
   /** 音频链接数组信息 */
   audioList?: ArtPlayerPluginM4SAudioSupportOption["audioList"];
   /** 画质信息 */
@@ -214,6 +216,8 @@ export const BilibiliBangumiArtPlayer = {
     const artOption: Option = {
       ...ArtPlayerCommonOption(),
       container: option.container,
+      /** 覆盖 - 视频封面 */
+      poster: option.poster,
     };
     // 添加插件
     if (!Array.isArray(artOption.plugins)) {
